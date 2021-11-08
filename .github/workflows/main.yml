@@ -1,0 +1,36 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Push to BGA
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow at 2:22 am every morning, Github says that scheduled actions can be delayed if placed directly on the hour
+  # so I moved it to 22 minutes past the hour
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '22 2 * * *'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: 🚚 Get latest code from main
+        uses: actions/checkout@v2
+
+      # Runs a single command using the runners shell
+      - name: 📂 Sync files to BGA
+        uses: SamKirkland/FTP-Deploy-Action@4.1.0
+        with:
+          server: 1.studio.boardgamearena.com
+          username: SeanMcTex
+          password: ${{ secrets.BGA_SFTP_PASSWORD }}
+          dry-run: true

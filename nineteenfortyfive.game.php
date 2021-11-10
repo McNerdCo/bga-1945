@@ -1,29 +1,30 @@
 <?php
- /**
-  *------
-  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
-  * NineteenFortyFive implementation : © <Your name here> <Your email address here>
-  * 
-  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
-  * See http://en.boardgamearena.com/#!doc/Studio for more information.
-  * -----
-  * 
-  * nineteenfortyfive.game.php
-  *
-  * This is the main file for your game logic.
-  *
-  * In this PHP file, you are going to defines the rules of the game.
-  *
-  */
+
+/**
+ *------
+ * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
+ * NineteenFortyFive implementation : © <Your name here> <Your email address here>
+ * 
+ * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
+ * See http://en.boardgamearena.com/#!doc/Studio for more information.
+ * -----
+ * 
+ * nineteenfortyfive.game.php
+ *
+ * This is the main file for your game logic.
+ *
+ * In this PHP file, you are going to defines the rules of the game.
+ *
+ */
 
 
-require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
+require_once(APP_GAMEMODULE_PATH . 'module/table/table.game.php');
 
 
 class NineteenFortyFive extends Table
 {
-	function __construct( )
-	{
+    function __construct()
+    {
         // Your global variables labels:
         //  Here, you can assign labels to global variables you are using for this game.
         //  You can use any number of global variables with IDs between 10 and 99.
@@ -31,22 +32,25 @@ class NineteenFortyFive extends Table
         //  the corresponding ID in gameoptions.inc.php.
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         parent::__construct();
-        
-        self::initGameStateLabels( array( 
+
+        self::initGameStateLabels(array(
             //    "my_first_global_variable" => 10,
             //    "my_second_global_variable" => 11,
             //      ...
             //    "my_first_game_variant" => 100,
             //    "my_second_game_variant" => 101,
             //      ...
-        ) );        
-	}
-	
-    protected function getGameName( )
+        ));
+
+        $this->cards = self::getNew("module.common.deck");
+        $this->cards->init("card");
+    }
+
+    protected function getGameName()
     {
-		// Used for translations and stuff. Please do not modify.
+        // Used for translations and stuff. Please do not modify.
         return "nineteenfortyfive";
-    }	
+    }
 
     /*
         setupNewGame:
@@ -55,40 +59,158 @@ class NineteenFortyFive extends Table
         In this method, you must setup the game according to the game rules, so that
         the game is ready to be played.
     */
-    protected function setupNewGame( $players, $options = array() )
-    {    
+    protected function setupNewGame($players, $options = array())
+    {
         // Set the colors of the players with HTML color code
         // The default below is red/green/blue/orange/brown
         // The number of colors defined here must correspond to the maximum number of players allowed for the gams
         $gameinfos = self::getGameinfos();
         $default_colors = $gameinfos['player_colors'];
- 
+
         // Create players
         // Note: if you added some extra field on "player" table in the database (dbmodel.sql), you can initialize it there.
         $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar) VALUES ";
         $values = array();
-        foreach( $players as $player_id => $player )
-        {
-            $color = array_shift( $default_colors );
-            $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."')";
+        foreach ($players as $player_id => $player) {
+            $color = array_shift($default_colors);
+            $values[] = "('" . $player_id . "','$color','" . $player['player_canal'] . "','" . addslashes($player['player_name']) . "','" . addslashes($player['player_avatar']) . "')";
         }
-        $sql .= implode( $values, ',' );
-        self::DbQuery( $sql );
-        self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
+        $sql .= implode($values, ',');
+        self::DbQuery($sql);
+        self::reattributeColorsBasedOnPreferences($players, $gameinfos['player_colors']);
         self::reloadPlayersBasicInfos();
-        
+
         /************ Start the game initialization *****/
 
         // Init global values with their initial values
         //self::setGameStateInitialValue( 'my_first_global_variable', 0 );
-        
+
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
         //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
 
         // TODO: setup the initial game situation here
-       
+        $cards = array(
+            array('type' => 'army', 'type_arg' => 1, 'nbr' => 5),
+            array('type' => 'army', 'type_arg' => 2, 'nbr' => 4),
+            array('type' => 'army', 'type_arg' => 3, 'nbr' => 3),
+            array('type' => 'army', 'type_arg' => 4, 'nbr' => 2),
+            array('type' => 'army', 'type_arg' => 5, 'nbr' => 1),
+
+            array('type' => 'navy', 'type_arg' => 1, 'nbr' => 5),
+            array('type' => 'navy', 'type_arg' => 2, 'nbr' => 4),
+            array('type' => 'navy', 'type_arg' => 3, 'nbr' => 3),
+            array('type' => 'navy', 'type_arg' => 4, 'nbr' => 2),
+            array('type' => 'navy', 'type_arg' => 5, 'nbr' => 1),
+
+            array('type' => 'airforce', 'type_arg' => 1, 'nbr' => 5),
+            array('type' => 'airforce', 'type_arg' => 2, 'nbr' => 4),
+            array('type' => 'airforce', 'type_arg' => 3, 'nbr' => 3),
+            array('type' => 'airforce', 'type_arg' => 4, 'nbr' => 2),
+            array('type' => 'airforce', 'type_arg' => 5, 'nbr' => 1),
+
+            array('type' => 'marines', 'type_arg' => 1, 'nbr' => 5),
+            array('type' => 'marines', 'type_arg' => 2, 'nbr' => 4),
+            array('type' => 'marines', 'type_arg' => 3, 'nbr' => 3),
+            array('type' => 'marines', 'type_arg' => 4, 'nbr' => 2),
+            array('type' => 'marines', 'type_arg' => 5, 'nbr' => 1),
+
+            array('type' => 'victorypoint', 'type_arg' => 1, 'nbr' => 6),
+
+            // centralafrica
+            array('type' => 'africa', 'type_arg' => 1, 'nbr' => 1),
+            // northernafrica
+            array('type' => 'africa', 'type_arg' => 2, 'nbr' => 1),
+            // southernafrica
+            array('type' => 'africa', 'type_arg' => 3, 'nbr' => 1),
+
+            // centralasia
+            array('type' => 'asia', 'type_arg' => 1, 'nbr' => 1),
+            // china
+            array('type' => 'asia', 'type_arg' => 2, 'nbr' => 1),
+            // japan
+            array('type' => 'asia', 'type_arg' => 3, 'nbr' => 1),
+            // middleeast
+            array('type' => 'asia', 'type_arg' => 4, 'nbr' => 1),
+            // russia
+            array('type' => 'asia', 'type_arg' => 5, 'nbr' => 1),
+
+            // northwesternaustralia
+            array('type' => 'australia', 'type_arg' => 1, 'nbr' => 1),
+            // southeasternaustralia
+            array('type' => 'australia', 'type_arg' => 2, 'nbr' => 1),
+
+            // britishisles
+            array('type' => 'europe', 'type_arg' => 1, 'nbr' => 1),
+            // centraleurope
+            array('type' => 'europe', 'type_arg' => 2, 'nbr' => 1),
+            // easterneurope
+            array('type' => 'europe', 'type_arg' => 3, 'nbr' => 1),
+            // mediterranean
+            array('type' => 'europe', 'type_arg' => 4, 'nbr' => 1),
+            // scandanavia
+            array('type' => 'europe', 'type_arg' => 5, 'nbr' => 1),
+            // spain
+            array('type' => 'europe', 'type_arg' => 6, 'nbr' => 1),
+
+            // alaska
+            array('type' => 'northamerica', 'type_arg' => 1, 'nbr' => 1),
+            // centralamerica
+            array('type' => 'northamerica', 'type_arg' => 2, 'nbr' => 1),
+            // centralus
+            array('type' => 'northamerica', 'type_arg' => 3, 'nbr' => 1),
+            // easterncanada
+            array('type' => 'northamerica', 'type_arg' => 4, 'nbr' => 1),
+            // easternus
+            array('type' => 'northamerica', 'type_arg' => 5, 'nbr' => 1),
+            // westerncanada
+            array('type' => 'northamerica', 'type_arg' => 6, 'nbr' => 1),
+            // westernus
+            array('type' => 'northamerica', 'type_arg' => 7, 'nbr' => 1),
+
+            // argentina
+            array('type' => 'southamerica', 'type_arg' => 1, 'nbr' => 1),
+            // brazil
+            array('type' => 'southamerica', 'type_arg' => 2, 'nbr' => 1),
+            // columbia
+            array('type' => 'southamerica', 'type_arg' => 3, 'nbr' => 1),
+            // peru
+            array('type' => 'southamerica', 'type_arg' => 4, 'nbr' => 1),
+
+            // armsdealer
+            array('type' => 'special', 'type_arg' => 1, 'nbr' => 1),
+            // cutsupplylines
+            array('type' => 'special', 'type_arg' => 2, 'nbr' => 1),
+            // defection
+            array('type' => 'special', 'type_arg' => 3, 'nbr' => 1),
+            // draft
+            array('type' => 'special', 'type_arg' => 4, 'nbr' => 1),
+            // missiledefense
+            array('type' => 'special', 'type_arg' => 5, 'nbr' => 1),
+            // nuke
+            array('type' => 'special', 'type_arg' => 6, 'nbr' => 1),
+            // paratroopers
+            array('type' => 'special', 'type_arg' => 7, 'nbr' => 1),
+            // psyops
+            array('type' => 'special', 'type_arg' => 8, 'nbr' => 1),
+            // rally
+            array('type' => 'special', 'type_arg' => 9, 'nbr' => 1),
+            // reparations
+            array('type' => 'special', 'type_arg' => 10, 'nbr' => 1),
+            // revolution
+            array('type' => 'special', 'type_arg' => 11, 'nbr' => 1),
+            // sniper
+            array('type' => 'special', 'type_arg' => 12, 'nbr' => 1),
+            // spy
+            array('type' => 'special', 'type_arg' => 13, 'nbr' => 1),
+            // totalitarianism
+            array('type' => 'special', 'type_arg' => 14, 'nbr' => 1),
+            // veteran
+            array('type' => 'special', 'type_arg' => 15, 'nbr' => 1)
+        );
+
+        $this->cards->createCards($cards, 'deck');
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
@@ -108,16 +230,16 @@ class NineteenFortyFive extends Table
     protected function getAllDatas()
     {
         $result = array();
-    
+
         $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
-    
+
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
         $sql = "SELECT player_id id, player_score score FROM player ";
-        $result['players'] = self::getCollectionFromDb( $sql );
-  
+        $result['players'] = self::getCollectionFromDb($sql);
+
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
-  
+
         return $result;
     }
 
@@ -139,9 +261,9 @@ class NineteenFortyFive extends Table
     }
 
 
-//////////////////////////////////////////////////////////////////////////////
-//////////// Utility functions
-////////////    
+    //////////////////////////////////////////////////////////////////////////////
+    //////////// Utility functions
+    ////////////    
 
     /*
         In this space, you can put any utility methods useful for your game logic
@@ -149,9 +271,9 @@ class NineteenFortyFive extends Table
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//////////// Player actions
-//////////// 
+    //////////////////////////////////////////////////////////////////////////////
+    //////////// Player actions
+    //////////// 
 
     /*
         Each time a player is doing some game action, one of the methods below is called.
@@ -184,10 +306,10 @@ class NineteenFortyFive extends Table
     
     */
 
-    
-//////////////////////////////////////////////////////////////////////////////
-//////////// Game state arguments
-////////////
+
+    //////////////////////////////////////////////////////////////////////////////
+    //////////// Game state arguments
+    ////////////
 
     /*
         Here, you can create methods defined as "game state arguments" (see "args" property in states.inc.php).
@@ -212,15 +334,15 @@ class NineteenFortyFive extends Table
     }    
     */
 
-//////////////////////////////////////////////////////////////////////////////
-//////////// Game state actions
-////////////
+    //////////////////////////////////////////////////////////////////////////////
+    //////////// Game state actions
+    ////////////
 
     /*
         Here, you can create methods defined as "game state actions" (see "action" property in states.inc.php).
         The action method of state X is called everytime the current game state is set to X.
     */
-    
+
     /*
     
     Example for game state "MyGameState":
@@ -234,9 +356,9 @@ class NineteenFortyFive extends Table
     }    
     */
 
-//////////////////////////////////////////////////////////////////////////////
-//////////// Zombie
-////////////
+    //////////////////////////////////////////////////////////////////////////////
+    //////////// Zombie
+    ////////////
 
     /*
         zombieTurn:
@@ -251,15 +373,15 @@ class NineteenFortyFive extends Table
         you must _never_ use getCurrentPlayerId() or getCurrentPlayerName(), otherwise it will fail with a "Not logged" error message. 
     */
 
-    function zombieTurn( $state, $active_player )
+    function zombieTurn($state, $active_player)
     {
-    	$statename = $state['name'];
-    	
+        $statename = $state['name'];
+
         if ($state['type'] === "activeplayer") {
             switch ($statename) {
                 default:
-                    $this->gamestate->nextState( "zombiePass" );
-                	break;
+                    $this->gamestate->nextState("zombiePass");
+                    break;
             }
 
             return;
@@ -267,17 +389,17 @@ class NineteenFortyFive extends Table
 
         if ($state['type'] === "multipleactiveplayer") {
             // Make sure player is in a non blocking status for role turn
-            $this->gamestate->setPlayerNonMultiactive( $active_player, '' );
-            
+            $this->gamestate->setPlayerNonMultiactive($active_player, '');
+
             return;
         }
 
-        throw new feException( "Zombie mode not supported at this game state: ".$statename );
+        throw new feException("Zombie mode not supported at this game state: " . $statename);
     }
-    
-///////////////////////////////////////////////////////////////////////////////////:
-////////// DB upgrade
-//////////
+
+    ///////////////////////////////////////////////////////////////////////////////////:
+    ////////// DB upgrade
+    //////////
 
     /*
         upgradeTableDb:
@@ -289,32 +411,32 @@ class NineteenFortyFive extends Table
         update the game database and allow the game to continue to run with your new version.
     
     */
-    
-    function upgradeTableDb( $from_version )
+
+    function upgradeTableDb($from_version)
     {
         // $from_version is the current version of this game database, in numerical form.
         // For example, if the game was running with a release of your game named "140430-1345",
         // $from_version is equal to 1404301345
-        
+
         // Example:
-//        if( $from_version <= 1404301345 )
-//        {
-//            // ! important ! Use DBPREFIX_<table_name> for all tables
-//
-//            $sql = "ALTER TABLE DBPREFIX_xxxxxxx ....";
-//            self::applyDbUpgradeToAllDB( $sql );
-//        }
-//        if( $from_version <= 1405061421 )
-//        {
-//            // ! important ! Use DBPREFIX_<table_name> for all tables
-//
-//            $sql = "CREATE TABLE DBPREFIX_xxxxxxx ....";
-//            self::applyDbUpgradeToAllDB( $sql );
-//        }
-//        // Please add your future database scheme changes here
-//
-//
+        //        if( $from_version <= 1404301345 )
+        //        {
+        //            // ! important ! Use DBPREFIX_<table_name> for all tables
+        //
+        //            $sql = "ALTER TABLE DBPREFIX_xxxxxxx ....";
+        //            self::applyDbUpgradeToAllDB( $sql );
+        //        }
+        //        if( $from_version <= 1405061421 )
+        //        {
+        //            // ! important ! Use DBPREFIX_<table_name> for all tables
+        //
+        //            $sql = "CREATE TABLE DBPREFIX_xxxxxxx ....";
+        //            self::applyDbUpgradeToAllDB( $sql );
+        //        }
+        //        // Please add your future database scheme changes here
+        //
+        //
 
 
-    }    
+    }
 }

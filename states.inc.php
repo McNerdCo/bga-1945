@@ -64,36 +64,57 @@ $machinestates = array(
     // Note: ID=2 => your first state
 
     2 => array(
-    		"name" => "playerTurn",
-    		"description" => clienttranslate('${actplayer} must play a card or pass'),
-    		"descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
-    		"type" => "activeplayer",
-    		"possibleactions" => array( "playCard", "pass" ),
-    		"transitions" => array( "playCard" => 2, "pass" => 2 )
-    ),
-    
-/*
-    Examples:
-    
-    2 => array(
-        "name" => "nextPlayer",
-        "description" => '',
-        "type" => "game",
-        "action" => "stNextPlayer",
-        "updateGameProgression" => true,   
-        "transitions" => array( "endGame" => 99, "nextPlayer" => 10 )
-    ),
-    
-    10 => array(
         "name" => "playerTurn",
-        "description" => clienttranslate('${actplayer} must play a card or pass'),
-        "descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
+        "description" => clienttranslate('${actplayer} must play a territory, invade territory, or pass.'),
+        "descriptionmyturn" => clienttranslate('${you} must play a territory, invade a territory, or pass.'),
         "type" => "activeplayer",
-        "possibleactions" => array( "playCard", "pass" ),
-        "transitions" => array( "playCard" => 2, "pass" => 2 )
-    ), 
+        "possibleactions" => array( "playCard", "invade", "pass" ),
+        "transitions" => array( "playCard" => 4, "invade" => 3, "pass" => 98 )
+    ),
 
-*/    
+    3 => array(
+        "name" => "playerInvade",
+        "description" => clienttranslate('${actplayer} must choose a territory to invade.'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a territory to invade.'),
+        "type" => "activeplayer",
+        "possibleactions" => array( "chooseTarget", "pass" ),
+        "transitions" => array( "chooseTarget" => 4, "pass" => 98 )
+    ),
+
+    4 => array(
+        "name" => "battleInProgress",
+        "description" => clienttranslate('All players can play cards.'),
+        "descriptionmyturn" => clienttranslate('${you} may commit cards to battles.'),
+        "type" => "multipleactiveplayer",
+        "possibleactions" => array( "battleComplete" ),
+        "transitions" => array( "battleComplete" => 5 )
+    ),
+
+    5 => array(
+        "name" => "resolveSpecialCards",
+        "description" => clienttranslate('All players must resolve special cards.'),
+        "descriptionmyturn" => clienttranslate('${you} must resolve special cards.'),
+        "type" => "multipleactiveplayer",
+        "possibleactions" => array( "specialResolutionComplete" ),
+        "transitions" => array( "specialResolutionComplete" => 6 )
+    ),
+
+    6 => array(
+        "name" => "resolveBattle",
+        "description" => clienttranslate('Resolving battle.'),
+        "type" => "game",
+        "action" => "stResolveBattle",
+        "possibleactions" => array( "battleResolutionComplete" ),
+        "transitions" => array( "battleResolutionComplete" => 98 )
+    ),
+
+    98 => array(
+        "name" => "nextPlayer",
+        "description" => clienttranslate('Starting next player turn.'),
+        "type" => "manager",
+        "action" => "stResolveBattle",
+        "args" => "argGameEnd"
+    ),
    
     // Final state.
     // Please do not modify (and do not overload action/args methods).

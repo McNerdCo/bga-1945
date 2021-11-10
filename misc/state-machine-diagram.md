@@ -4,14 +4,15 @@ It seems that setting up the state machine is one of the foundational pieces of 
 
 ```mermaid
 graph TD;
-    GameSetup([Game Setup - Game])-->PlayerTurn;
-    PlayerTurn[Player Turn - Activeplayer]-->NextPlayer;
+    GameSetup([Game Setup 1 - Game])-->PlayerTurn;
+    PlayerTurn[Player Turn 2 - Activeplayer]-->NextPlayer;
     PlayerTurn--Invade-->StartInvasion;
-    StartInvasion[Start Invasion - Activeplayer]-->PlayBattleCards;
+    StartInvasion[Start Invasion 3 - Activeplayer]-->PlayBattleCards;
+    StartInvasion--cancel-->NextPlayer
     PlayerTurn--Draws Territories-->PlayBattleCards;
-    PlayBattleCards[Play Battle Cards - Mutipleactiveplayer]--Everyone Indicates Done-->ResolveBattleCards;
-    ResolveBattleCards[Resolve Battle Cards - Multipleactiveplayer]-->ResolveBattle;
-    ResolveBattle{{Resolve Battle - Game}}-->NextPlayer;
-    NextPlayer{{Next Player - Game}}-->GameEnd([Game End - Game]);
+    PlayBattleCards[Play Battle Cards 4 - Mutipleactiveplayer]--Everyone Indicates Done-->ResolveBattleCards;
+    ResolveBattleCards[Resolve Battle Cards 5 - Multipleactiveplayer]-->ResolveBattle;
+    ResolveBattle{{Resolve Battle 6 - Game}}-->NextPlayer;
+    NextPlayer{{Next Player 98 - Game}}-->GameEnd([Game End - Game]);
     NextPlayer-->PlayerTurn;
 ```

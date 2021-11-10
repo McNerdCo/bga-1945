@@ -144,6 +144,13 @@ function (dojo, declare) {
                     this.addActionButton( 'button_3_id', _('Button 3 label'), 'onMyMethodToCall3' ); 
                     break;
 */
+                case 'playerTurn':
+                    this.addActionButton( 'button_1_id', _('Draw Territory'), 'onDrawTerritory' );
+                    // this.addActionButton( 'button_2_id', _('Invade'), 'onInvade' );
+                    // this.addActionButton( 'button_3_id', _('Pass'), 'onPass' );
+                    break;
+
+
                 }
             }
         },        
@@ -206,6 +213,34 @@ function (dojo, declare) {
         },        
         
         */
+
+
+        onDrawTerritory: function( evt )
+        {
+            console.log( 'onDrawTerritory' );
+            
+            // Preventing default browser reaction
+            dojo.stopEvent( evt );
+
+            // Check that this action is possible (see "possibleactions" in states.inc.php)
+            if( ! this.checkAction( 'playCard' ) )
+            {   return; }
+
+            this.ajaxcall( "/nineteenfortyfive/nineteenfortyfive/playCard.html", { 
+                                                                    lock: true
+                                                                 }, 
+                         this, function( result ) {
+                            
+                            // What to do after the server call if it succeeded
+                            // (most of the time: nothing)
+                            
+                         }, function( is_error) {
+
+                            // What to do after the server call in anyway (success or failure)
+                            // (most of the time: nothing)
+
+                         } );        
+        },        
 
         
         ///////////////////////////////////////////////////

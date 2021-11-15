@@ -150,7 +150,12 @@ function (dojo, declare) {
                     this.addActionButton( 'button_3_id', _('Pass'), 'onPass' );
                     break;
 
-
+                case 'playerInvade':
+                    this.addActionButton( 'button_1_id', _('Select Territory'), 'onChooseTarget' );
+                    this.addActionButton( 'button_3_id', _('Pass'), 'onPass' );
+                    break;
+    
+    
                 }
             }
         },        
@@ -261,6 +266,25 @@ function (dojo, declare) {
             {   return; }
 
             this.ajaxcall( "/nineteenfortyfive/nineteenfortyfive/pass.html", 
+                { 
+                    lock: true
+                }, 
+                this, 
+                function( result ) {            
+                }, 
+                function( is_error) {
+                } 
+            );        
+        },        
+
+        onChooseTarget: function( evt )
+        {
+            console.log( 'onChooseTarget' );            
+            dojo.stopEvent( evt );
+            if( ! this.checkAction( 'chooseTarget' ) )
+            {   return; }
+
+            this.ajaxcall( "/nineteenfortyfive/nineteenfortyfive/chooseTarget.html", 
                 { 
                     lock: true
                 }, 

@@ -84,6 +84,13 @@
         self::ajaxResponse( );
     }
 
+    public function chooseTarget()
+    {
+        self::setAjaxMode();     
+        $this->game->chooseTarget();
+        self::ajaxResponse( );
+    }
+
   }
   
 

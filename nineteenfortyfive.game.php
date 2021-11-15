@@ -327,6 +327,13 @@ class NineteenFortyFive extends Table
         $this->gamestate->nextState( 'pass' );          
     }
 
+    function chooseTarget()
+    {
+        self::checkAction( 'chooseTarget' ); 
+        $player_id = self::getActivePlayerId();
+        $this->gamestate->nextState( 'chooseTarget' );          
+    }
+
     function stNextPlayer()
     {
         $player_id = self::activeNextPlayer();

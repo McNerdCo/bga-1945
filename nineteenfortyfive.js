@@ -146,8 +146,8 @@ function (dojo, declare) {
 */
                 case 'playerTurn':
                     this.addActionButton( 'button_1_id', _('Draw Territory'), 'onDrawTerritory' );
-                    // this.addActionButton( 'button_2_id', _('Invade'), 'onInvade' );
-                    // this.addActionButton( 'button_3_id', _('Pass'), 'onPass' );
+                    this.addActionButton( 'button_2_id', _('Invade'), 'onInvade' );
+                    this.addActionButton( 'button_3_id', _('Pass'), 'onPass' );
                     break;
 
 
@@ -217,29 +217,59 @@ function (dojo, declare) {
 
         onDrawTerritory: function( evt )
         {
-            console.log( 'onDrawTerritory' );
-            
-            // Preventing default browser reaction
+            console.log( 'onDrawTerritory' );            
             dojo.stopEvent( evt );
-
-            // Check that this action is possible (see "possibleactions" in states.inc.php)
             if( ! this.checkAction( 'playCard' ) )
             {   return; }
 
-            this.ajaxcall( "/nineteenfortyfive/nineteenfortyfive/playCard.html", { 
-                                                                    lock: true
-                                                                 }, 
-                         this, function( result ) {
-                            
-                            // What to do after the server call if it succeeded
-                            // (most of the time: nothing)
-                            
-                         }, function( is_error) {
+            this.ajaxcall( "/nineteenfortyfive/nineteenfortyfive/playCard.html", 
+                { 
+                    lock: true
+                }, 
+                this, 
+                function( result ) {            
+                }, 
+                function( is_error) {
+                } 
+            );        
+        },        
 
-                            // What to do after the server call in anyway (success or failure)
-                            // (most of the time: nothing)
+        onInvade: function( evt )
+        {
+            console.log( 'onInvade' );            
+            dojo.stopEvent( evt );
+            if( ! this.checkAction( 'invade' ) )
+            {   return; }
 
-                         } );        
+            this.ajaxcall( "/nineteenfortyfive/nineteenfortyfive/invade.html", 
+                { 
+                    lock: true
+                }, 
+                this, 
+                function( result ) {            
+                }, 
+                function( is_error) {
+                } 
+            );        
+        },        
+
+        onPass: function( evt )
+        {
+            console.log( 'pass' );            
+            dojo.stopEvent( evt );
+            if( ! this.checkAction( 'pass' ) )
+            {   return; }
+
+            this.ajaxcall( "/nineteenfortyfive/nineteenfortyfive/pass.html", 
+                { 
+                    lock: true
+                }, 
+                this, 
+                function( result ) {            
+                }, 
+                function( is_error) {
+                } 
+            );        
         },        
 
         

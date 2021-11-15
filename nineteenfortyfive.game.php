@@ -308,13 +308,29 @@ class NineteenFortyFive extends Table
 
     function playCard()
     {
-        // Check that this is the player's turn and that it is a "possible action" at this game state (see states.inc.php)
         self::checkAction( 'playCard' ); 
-        
         $player_id = self::getActivePlayerId();
-        
-        // Add your game logic to play a card there 
         $this->gamestate->nextState( 'playCard' );          
+    }
+
+    function invade()
+    {
+        self::checkAction( 'invade' ); 
+        $player_id = self::getActivePlayerId();
+        $this->gamestate->nextState( 'invade' );          
+    }
+
+    function pass()
+    {
+        self::checkAction( 'pass' ); 
+        $player_id = self::getActivePlayerId();
+        $this->gamestate->nextState( 'pass' );          
+    }
+
+    function stNextPlayer()
+    {
+        $player_id = self::activeNextPlayer();
+        $this->gamestate->nextState( 'nextPlayer' );
     }
 
     

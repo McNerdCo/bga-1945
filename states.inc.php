@@ -112,8 +112,10 @@ $machinestates = array(
         "name" => "nextPlayer",
         "description" => clienttranslate('Starting next player turn.'),
         "type" => "manager",
-        "action" => "stResolveBattle",
-        "args" => "argGameEnd"
+        "action" => "stNextPlayer",
+        "args" => "argGameEnd",
+        "transitions" => array( "nextPlayer" => 2 )
+
     ),
    
     // Final state.

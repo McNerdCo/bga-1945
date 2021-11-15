@@ -155,7 +155,15 @@ function (dojo, declare) {
                     this.addActionButton( 'button_3_id', _('Pass'), 'onPass' );
                     break;
     
+                case 'battleInProgress':
+                    this.addActionButton( 'button_1_id', _('Everyone Is Done'), 'onEveryoneDone' );
+                    break;
+        
+                case 'resolveSpecialCards':
+                    this.addActionButton( 'button_1_id', _('All Specials Resolved'), 'onAllSpecialsResolved' );
+                    break;
     
+                    
                 }
             }
         },        
@@ -285,6 +293,44 @@ function (dojo, declare) {
             {   return; }
 
             this.ajaxcall( "/nineteenfortyfive/nineteenfortyfive/chooseTarget.html", 
+                { 
+                    lock: true
+                }, 
+                this, 
+                function( result ) {            
+                }, 
+                function( is_error) {
+                } 
+            );        
+        },        
+
+        onEveryoneDone: function( evt )
+        {
+            console.log( 'onEveryoneDone' );            
+            dojo.stopEvent( evt );
+            if( ! this.checkAction( 'battleComplete' ) )
+            {   return; }
+
+            this.ajaxcall( "/nineteenfortyfive/nineteenfortyfive/battleComplete.html", 
+                { 
+                    lock: true
+                }, 
+                this, 
+                function( result ) {            
+                }, 
+                function( is_error) {
+                } 
+            );        
+        },        
+
+        onAllSpecialsResolved: function( evt )
+        {
+            console.log( 'onAllSpecialsResolved' );            
+            dojo.stopEvent( evt );
+            if( ! this.checkAction( 'specialResolutionComplete' ) )
+            {   return; }
+
+            this.ajaxcall( "/nineteenfortyfive/nineteenfortyfive/specialResolutionComplete.html", 
                 { 
                     lock: true
                 }, 

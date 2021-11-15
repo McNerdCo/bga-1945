@@ -340,6 +340,39 @@ class NineteenFortyFive extends Table
         $this->gamestate->nextState( 'nextPlayer' );
     }
 
+    function stBattleInProgress()
+    {
+        // activate all players
+        $this->gamestate->setAllPlayersMultiactive();
+    }
+
+    function stSpecialResolutionInProgress()
+    {
+        // activate all players
+        $this->gamestate->setAllPlayersMultiactive();
+    }
+
+    function battleComplete()
+    {
+        self::checkAction( 'battleComplete' ); 
+        $player_id = self::getActivePlayerId();
+        $this->gamestate->nextState( 'battleComplete' );          
+    }
+
+    function specialResolutionComplete()
+    {
+        //self::checkAction( 'specialResolutionComplete' ); 
+        //$player_id = self::getActivePlayerId();
+        $this->gamestate->nextState( 'specialResolutionComplete' );          
+    }
+
+    function stResolveBattle()
+    {
+        self::checkAction( 'battleResolutionComplete' ); 
+        $player_id = self::activeNextPlayer();
+        $this->gamestate->nextState( 'battleResolutionComplete' );
+    }
+
     
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state arguments

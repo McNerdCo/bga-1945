@@ -83,9 +83,10 @@ $machinestates = array(
 
     4 => array(
         "name" => "battleInProgress",
-        "description" => clienttranslate('All players can play cards.'),
+        "description" => clienttranslate('Choose cards to commit to the battle.'),
         "descriptionmyturn" => clienttranslate('${you} may commit cards to battles.'),
         "type" => "multipleactiveplayer",
+        "action" => "stBattleInProgress",
         "possibleactions" => array( "battleComplete" ),
         "transitions" => array( "battleComplete" => 5 )
     ),
@@ -95,6 +96,7 @@ $machinestates = array(
         "description" => clienttranslate('All players must resolve special cards.'),
         "descriptionmyturn" => clienttranslate('${you} must resolve special cards.'),
         "type" => "multipleactiveplayer",
+        "action" => "stSpecialResolutionInProgress",
         "possibleactions" => array( "specialResolutionComplete" ),
         "transitions" => array( "specialResolutionComplete" => 6 )
     ),

@@ -91,6 +91,20 @@
         self::ajaxResponse( );
     }
 
+    public function battleComplete()
+    {
+        self::setAjaxMode();     
+        $this->game->battleComplete();
+        self::ajaxResponse( );
+    }
+
+    public function specialResolutionComplete()
+    {
+        self::setAjaxMode();     
+        $this->game->specialResolutionComplete();
+        self::ajaxResponse( );
+    }
+
   }
   
 

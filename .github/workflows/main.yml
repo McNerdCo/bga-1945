@@ -7,8 +7,8 @@ on:
   # Triggers the workflow at 2:22 am every morning, Github says that scheduled actions can be delayed if placed directly on the hour
   # so I moved it to 22 minutes past the hour
   schedule:
-    # * is a special character in YAML so you have to quote this string
-    - cron:  '22 2 * * *'
+    # The 29th of February on a Monday (this is temp to disable so I stop getting those annoying emails)
+    - cron:  '0 0 29 2 1'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
